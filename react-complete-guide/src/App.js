@@ -5,36 +5,37 @@ import Person from './Person/Person'
 class App extends Component {
   state = {
     people: [
-      { name: 'Max', age: 28 },
-      { name: 'Manu', age: 30 },
-      { name: 'Stephanie', age: 26 },
+      { id: '1', name: 'Max', age: 28 },
+      { id: '2', name: 'Manu', age: 30 },
+      { id: '3', name: 'Stephanie', age: 26 },
     ],
     showPeople: false,
   }
 
-  switchNameHandler = (newName) => {
-    this.setState({
-      people: [
-        { name: newName, age: 28 },
-        { name: 'Manuda', age: 30 },
-        { name: 'Stephan', age: 26 },
-      ]
-    })
+  nameChangedHandler = (event, id) => {
+    const personIndex = this.state.people.findIndex(person => {
+      return person.id === id;
+    });
+
+    const person = { ...this.state.people[personIndex] }
+    person.name = event.target.value
+
+    const people = [...this.state.people]
+    people[personIndex] = person
+
+    this.setState({ people: people })
+
   }
 
-  nameChangedHandler = event => {
-    this.setState({
-      people: [
-        { name: 'Max', age: 28 },
-        { name: event.target.value, age: 30 },
-        { name: 'Stephan', age: 26 },
-      ]
-    })
+  deletePersonHandler = (personIndex) => {
+    const people = [...this.state.people];
+    people.splice(personIndex, 1);
+    this.setState({ people: people })
   }
 
   togglePersonsHandler = () => {
-    const doesShow = this.state.showPeople
-    this.setState({ showPeople: !doesShow })
+    const doesShow = this.state.showPeople;
+    this.setState({ showPeople: !doesShow });
   }
 
   render() {
@@ -51,8 +52,13 @@ class App extends Component {
     if (this.state.showPeople) {
       people = (
         <div>
-          {this.state.people.map(person => {
-            return <Person name={person.name} age={person.age} />
+          {this.state.people.map((person, index) => {
+            return <Person
+              key={person.id}
+              name={person.name}
+              age={person.age}
+              click={() => this.deletePersonHandler(index)}
+              changed={(event) => this.nameChangedHandler(event, person.id)} />
           })}
         </div>
       )
